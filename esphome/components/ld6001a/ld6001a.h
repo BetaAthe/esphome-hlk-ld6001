@@ -9,6 +9,7 @@
 #include "esphome/core/defines.h"
 #include "esphome/core/helpers.h"
 #include "esphome/core/preferences.h"
+#include "esphome/core/automation.h"
 #include "frame_parser.h"
 #include "command_queue.h"
 #include "target_tracker.h"
