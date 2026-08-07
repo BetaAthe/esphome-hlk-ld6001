@@ -230,7 +230,8 @@ class FrameParser {
     replaceAll(response, "\nMoving target", "\n\"Moving target\":");
     replaceAll(response, "\nStatic target", "\n\"Static target\":");
     replaceAll(response, "\nTarget exit", "\n\"Target exit\":");
-    replaceAll(response, "NOP_1.07-01", "\"NOP_1.07-01\"");
+    std::regex version_pattern(R"((NOP_\d+\.\d+-\d+))");
+    response = std::regex_replace(response, version_pattern, "\"$1\"");
     replaceAll(response, "SoftwareVersion", "PeopleCntSoftVerison");  // for the version older than NOP_1.07
     replaceAll(response, "\"Time\"", "\"TIME\"");  // for the version older than NOP_1.07
     replaceAll(response, "\"Prog\"", "\"PROG\"");  // for the version older than NOP_1.07
