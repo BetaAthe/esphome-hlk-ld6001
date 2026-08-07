@@ -223,6 +223,25 @@ class FrameParser {
     ESP_LOGD("ld6001a", "Found READ response: %s", response.c_str());
 
     buffer_.erase(buffer_.begin(), end_pos + 1);  // Remove the processed part from the buffer
+
+
+    void quote_unquoted_value(std::string &str, const std::string &key) {
+      const std::string needle = "\"" + key + "\":";
+      size_t pos = str.find(needle);
+      if (pos == std::string::npos) {
+        return; 
+      }
+      size_t value_start = pos + needle.size();
+      if (value_start >= str.size() || str[value_start] == '"') {
+        return;
+      }
+      size_t value_end = str.find_first_of(",}\r\n", value_start);
+      if (value_end == std::string::npos) {
+        value_end = str.size();
+      }
+      str.insert(value_end, "\"");
+      str.insert(value_start, "\"");
+    }
   
     // It looks like JSON, but it isnt. Try to fix it
     replaceAll(response, "\x09\x0a", "\r\n");
@@ -230,9 +249,8 @@ class FrameParser {
     replaceAll(response, "\nMoving target", "\n\"Moving target\":");
     replaceAll(response, "\nStatic target", "\n\"Static target\":");
     replaceAll(response, "\nTarget exit", "\n\"Target exit\":");
-    std::regex version_pattern(R"((NOP_\d+\.\d+-\d+))");
-    response = std::regex_replace(response, version_pattern, "\"$1\"");
     replaceAll(response, "SoftwareVersion", "PeopleCntSoftVerison");  // for the version older than NOP_1.07
+    quote_unquoted_value(response, "PeopleCntSoftVerison");
     replaceAll(response, "\"Time\"", "\"TIME\"");  // for the version older than NOP_1.07
     replaceAll(response, "\"Prog\"", "\"PROG\"");  // for the version older than NOP_1.07
     replaceAll(response, "s,", ",");
